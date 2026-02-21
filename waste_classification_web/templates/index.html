@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Phân loại rác thải</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 400px;
+            background: white;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        img {
+            width: 250px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .softmax {
+            text-align: left;
+            margin-top: 15px;
+        }
+        .softmax li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>♻️ PHÂN LOẠI RÁC THẢI</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required><br><br>
+        <button type="submit">Phân loại</button>
+    </form>
+
+    {% if img_path %}
+        <h3>📷 Ảnh đã tải lên</h3>
+        <img src="{{ img_path }}">
+    {% endif %}
+
+    {% if result %}
+        <h3>✅ Kết quả: {{ result }}</h3>
+        <p>🔢 Độ tin cậy: {{ confidence }}%</p>
+    {% endif %}
+
+    <!-- 👉 PHẦN IN SOFTMAX -->
+    {% if softmax %}
+        <hr>
+        <h3>📊 Softmax chi tiết</h3>
+        <ul class="softmax">
+            {% for label, value in softmax.items() %}
+                <li>🔹 {{ label }}: <b>{{ value }}%</b></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
+</body>
+</html>
