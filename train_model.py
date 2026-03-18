@@ -1,89 +1,69 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+import json
 
-# ==============================
-# 1. Cấu hình
-# ==============================
-TRAIN_DIR = "dataset/train"
-VAL_DIR = "dataset/validation"
 
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
-EPOCHS = 30
+DATASET_PATH = 'dataset_new'
 
-# ==============================
-# 2. Load dataset
-# ==============================
-train_ds = tf.keras.utils.image_dataset_from_directory(
-    TRAIN_DIR,
-    image_size=IMG_SIZE,
-    batch_size=BATCH_SIZE
+
+datagen = ImageDataGenerator(
+    rescale=1./255,
+    rotation_range=30,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    validation_split=0.2 
 )
 
-val_ds = tf.keras.utils.image_dataset_from_directory(
-    VAL_DIR,
-    image_size=IMG_SIZE,
-    batch_size=BATCH_SIZE
-)
-class_names = train_ds.class_names
-print("📂 CLASS NAMES (THỨ TỰ CHUẨN):", class_names)
-
-class_names = train_ds.class_names
-print("📂 Các loại rác:", class_names)
-
-NUM_CLASSES = len(class_names)
-
-# ==============================
-# 3. Tối ưu pipeline dữ liệu
-# ==============================
-AUTOTUNE = tf.data.AUTOTUNE
-train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
-val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
-# ==============================
-# 4. Xây dựng mô hình CNN
-# ==============================
-model = models.Sequential([
-    layers.Rescaling(1./255, input_shape=(224, 224, 3)),
-
-    layers.Conv2D(32, 3, activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Conv2D(64, 3, activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Conv2D(128, 3, activation='relu'),
-    layers.MaxPooling2D(),
-
-    layers.Flatten(),
-    layers.Dense(128, activation='relu'),
-    layers.Dropout(0.5),
-
-    layers.Dense(NUM_CLASSES, activation='softmax')
-])
-
-# ==============================
-# 5. Compile model
-# ==============================
-model.compile(
-    optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy']
+train_gen = datagen.flow_from_directory(
+    DATASET_PATH,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
 )
 
-model.summary()
-
-# ==============================
-# 6. Huấn luyện
-# ==============================
-history = model.fit(
-    train_ds,
-    validation_data=val_ds,
-    epochs=EPOCHS
+val_gen = datagen.flow_from_directory(
+    DATASET_PATH,
+    target_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
 )
 
-# ==============================
-# 7. Lưu model
-# ==============================
-model.save("waste_cnn.h5")
-print("✅ Đã lưu model waste_cnn.h5")
+
+class_indices = train_gen.class_indices
+class_names = {v: k for k, v in class_indices.items()}
+with open("class_names.json", "w") as f:
+    json.dump(class_names, f)
+
+
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation='relu')(x)
+
+predictions = Dense(len(class_indices), activation='softmax')(x)
+
+model = Model(inputs=base_model.input, outputs=predictions)
+
+
+for layer in base_model.layers:
+    layer.trainable = False
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+
+print("🚀 Bắt đầu huấn luyện...")
+model.fit(train_gen, validation_data=val_gen, epochs=10)
+
+
+model.save("model/waste_mobilenet_v2.h5")
+print("✅ Đã lưu model mới tại model/waste_mobilenet_v2.h5")

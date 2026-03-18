@@ -5,65 +5,122 @@
     <title>Phân loại rác thải</title>
     <style>
         body {
-            font-family: Arial;
-            background: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
             text-align: center;
+            margin: 0;
+            padding: 20px;
         }
         .container {
-            width: 400px;
+            max-width: 550px;
             background: white;
-            margin: 50px auto;
-            padding: 20px;
-            border-radius: 10px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        img {
-            width: 250px;
-            margin-top: 10px;
+        h2 { color: #2e7d32; margin-bottom: 25px; }
+        .upload-img {
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: 3px solid #e8f5e9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        button {
-            padding: 10px 20px;
-            background: green;
+        .btn-predict {
+            padding: 12px 35px;
+            background: #2e7d32;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
         }
-        .softmax {
+        .btn-predict:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            border-left: 5px solid #2e7d32;
+        }
+        .softmax-list {
             text-align: left;
-            margin-top: 15px;
+            list-style: none;
+            padding: 0;
         }
-        .softmax li {
-            margin: 5px 0;
+        .softmax-item {
+            margin-bottom: 12px;
         }
+        .label-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+       
+        .progress-bar {
+            background-color: #eee;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #4caf50;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        hr { border: 0; border-top: 1px solid #eee; margin: 25px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>♻️ PHÂN LOẠI RÁC THẢI</h2>
+    <h2>♻️ HỆ THỐNG PHÂN LOẠI RÁC</h2>
 
     <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="image" required><br><br>
-        <button type="submit">Phân loại</button>
+        <input type="file" name="image" accept="image/*" required style="margin-bottom: 15px;"><br>
+        <button type="submit" class="btn-predict">🔍 Bắt đầu phân tích</button>
     </form>
 
     {% if img_path %}
-        <h3>📷 Ảnh đã tải lên</h3>
-        <img src="{{ img_path }}">
+        <hr>
+        <h3>📷 Ảnh vật thể</h3>
+        <img src="{{ url_for('static', filename=img_path) }}" class="upload-img">
     {% endif %}
 
     {% if result %}
-        <h3>✅ Kết quả: {{ result }}</h3>
-        <p>🔢 Độ tin cậy: {{ confidence }}%</p>
+        <div class="result-box">
+            <h3 style="margin-top: 0;">✅ Dự đoán: <span style="color: #c62828;">{{ result }}</span></h3>
+            <p style="margin-bottom: 0;">🔢 Xác suất chính xác: <b>{{ confidence }}%</b></p>
+        </div>
     {% endif %}
 
-    <!-- 👉 PHẦN IN SOFTMAX -->
     {% if softmax %}
         <hr>
-        <h3>📊 Softmax chi tiết</h3>
-        <ul class="softmax">
+        <h3>📊 Phân tích chi tiết (%)</h3>
+        <ul class="softmax-list">
             {% for label, value in softmax.items() %}
-                <li>🔹 {{ label }}: <b>{{ value }}%</b></li>
+                {% if value > 0.1 %} {# Chỉ hiện những lớp có tỉ lệ đáng kể #}
+                <li class="softmax-item">
+                    <div class="label-text">
+                        <span>🔹 {{ label }}</span>
+                        <b>{{ value }}%</b>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ value }}%;"></div>
+                    </div>
+                </li>
+                {% endif %}
             {% endfor %}
         </ul>
     {% endif %}

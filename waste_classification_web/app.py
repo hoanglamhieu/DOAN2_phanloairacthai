@@ -1,66 +1,67 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
 import os
+import json
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-# =========================
-# Tạo thư mục upload
-# =========================
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# =========================
-# Load model
-# =========================
-model = load_model("./model/waste_cnn.h5")
 
-# ⚠️ PHẢI GIỐNG 100% LÚC TRAIN
-class_names = ['metal', 'organic', 'paper', 'plastic']
+model = load_model(r"C:\phanloairacthaisinhhoat\model\waste_mobilenet_v2.h5")
 
-# Map sang tiếng Việt
+
+with open("class_names.json", "r") as f:
+    class_names = json.load(f)
+
+
 label_map = {
+    'battery': 'Pin độc hại',
+    'biological': 'Rác hữu cơ/Sinh học',
+    'brown-glass': 'Thủy tinh nâu',
+    'cardboard': 'Bìa carton',
+    'clothes': 'Quần áo cũ',      
+    'green-glass': 'Thủy tinh xanh',
     'metal': 'Kim loại',
-    'organic': 'Rác hữu cơ',
     'paper': 'Giấy',
-    'plastic': 'Nhựa'
+    'plastic': 'Nhựa',
+    'shoes': 'Giày dép cũ',
+    'trash': 'Rác hỗn hợp',
+    'white-glass': 'Thủy tinh trắng'
 }
 
-# =========================
-# Hàm dự đoán + softmax
-# =========================
 def predict_waste(img_path):
-    img = image.load_img(
-        img_path,
-        target_size=(224, 224),
-        color_mode='rgb'
-    )
-
-    img_array = image.img_to_array(img) / 255.0
+    img = image.load_img(img_path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    
+    img_array = img_array / 255.0 
     img_array = np.expand_dims(img_array, axis=0)
 
-    # 👉 Softmax
+  
     predictions = model.predict(img_array)[0]
-
     class_index = np.argmax(predictions)
     confidence = predictions[class_index] * 100
 
-    label_en = class_names[class_index]
-    label_vi = label_map[label_en]
+   
+    str_index = str(class_index)
+    label_en = class_names.get(str_index, "Unknown")
+    
+   
+    label_vi = label_map.get(label_en, label_en)
 
-    # 👉 Chuẩn bị softmax để đưa ra web
+   
     softmax_dict = {}
     for i, prob in enumerate(predictions):
-        softmax_dict[label_map[class_names[i]]] = round(float(prob * 100), 2)
+        name_en = class_names.get(str(i), f"Lớp {i}")
+        name_vi = label_map.get(name_en, name_en)
+        softmax_dict[name_vi] = round(float(prob * 100), 2)
 
-    return label_vi, round(confidence, 2), softmax_dict
+    return label_vi, round(float(confidence), 2), softmax_dict
 
-
-# =========================
-# Route chính
-# =========================
 @app.route('/', methods=['GET', 'POST'])
 def index():
     result = None
@@ -71,10 +72,16 @@ def index():
     if request.method == 'POST':
         file = request.files.get('image')
         if file and file.filename != '':
-            img_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(img_path)
+            filename = file.filename
+            full_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(full_path)
+            
+           
+            img_display_path = 'uploads/' + filename 
 
-            result, confidence, softmax = predict_waste(img_path)
+           
+            result, confidence, softmax = predict_waste(full_path)
+            img_path = img_display_path
 
     return render_template(
         'index.html',
@@ -84,9 +91,6 @@ def index():
         softmax=softmax
     )
 
-
-# =========================
-# Run app
-# =========================
 if __name__ == '__main__':
+    
     app.run(debug=True)
