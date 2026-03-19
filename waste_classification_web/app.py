@@ -6,18 +6,24 @@ import os
 import json
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
+# Xác định đường dẫn gốc của dự án (Project Root)
+# Vì file này nằm trong thư mục 'waste_classification_web', 
+# chúng ta cần đi ra ngoài 1 cấp để thấy thư mục 'model' và 'static'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Cấu hình thư mục upload nằm trong static của thư mục gốc
+app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+# 1. SỬA ĐƯỜNG DẪN LOAD MODEL (Dùng đường dẫn tương đối thay vì ổ C:)
+model_path = os.path.join(BASE_DIR, 'model', 'waste_mobilenet_v2.h5')
+model = load_model(model_path)
 
-model = load_model(r"C:\phanloairacthaisinhhoat\model\waste_mobilenet_v2.h5")
-
-
-with open("class_names.json", "r") as f:
+# 2. SỬA ĐƯỜNG DẪN FILE JSON
+json_path = os.path.join(BASE_DIR, 'class_names.json')
+with open(json_path, "r", encoding="utf-8") as f:
     class_names = json.load(f)
-
 
 label_map = {
     'battery': 'Pin độc hại',
@@ -37,23 +43,17 @@ label_map = {
 def predict_waste(img_path):
     img = image.load_img(img_path, target_size=(224, 224))
     img_array = image.img_to_array(img)
-    
     img_array = img_array / 255.0 
     img_array = np.expand_dims(img_array, axis=0)
 
-  
     predictions = model.predict(img_array)[0]
     class_index = np.argmax(predictions)
     confidence = predictions[class_index] * 100
 
-   
     str_index = str(class_index)
     label_en = class_names.get(str_index, "Unknown")
-    
-   
     label_vi = label_map.get(label_en, label_en)
 
-   
     softmax_dict = {}
     for i, prob in enumerate(predictions):
         name_en = class_names.get(str(i), f"Lớp {i}")
@@ -76,10 +76,9 @@ def index():
             full_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(full_path)
             
-           
+            # Đường dẫn để hiển thị trên web
             img_display_path = 'uploads/' + filename 
 
-           
             result, confidence, softmax = predict_waste(full_path)
             img_path = img_display_path
 
@@ -91,10 +90,7 @@ def index():
         softmax=softmax
     )
 
-
-
 if __name__ == '__main__':
-    # Lấy cổng từ môi trường của Render, nếu không có thì mặc định là 5000
+    # Giữ nguyên phần Port để chạy trên Render
     port = int(os.environ.get('PORT', 5000))
-    # Chạy ứng dụng với host 0.0.0.0
     app.run(host='0.0.0.0', port=port)
