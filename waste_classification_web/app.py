@@ -7,20 +7,19 @@ import json
 
 app = Flask(__name__)
 
-# Xác định đường dẫn gốc của dự án (Project Root)
-# Vì file này nằm trong thư mục 'waste_classification_web', 
-# chúng ta cần đi ra ngoài 1 cấp để thấy thư mục 'model' và 'static'
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Cấu hình thư mục upload nằm trong static của thư mục gốc
+
 app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# 1. SỬA ĐƯỜNG DẪN LOAD MODEL (Dùng đường dẫn tương đối thay vì ổ C:)
+
 model_path = os.path.join(BASE_DIR, 'model', 'waste_mobilenet_v2.h5')
 model = load_model(model_path)
 
-# 2. SỬA ĐƯỜNG DẪN FILE JSON
+
 json_path = os.path.join(BASE_DIR, 'class_names.json')
 with open(json_path, "r", encoding="utf-8") as f:
     class_names = json.load(f)
