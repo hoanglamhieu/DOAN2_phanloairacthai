@@ -104,8 +104,8 @@ Output Layer (Softmax)
 👉 Sử dụng TensorFlow/Keras để xây dựng và huấn luyện.
 
 ⚙️ Cài đặt
-1. Clone project
-git clone https://github.com/your-username/phanloairacthaisinhhoat.git
+1. Clone project https://github.com/hoanglamhieu/DOAN2_phanloairacthai
+git clone https:
 cd phanloairacthaisinhhoat
 2. Cài thư viện
 pip install -r requirements.txt
