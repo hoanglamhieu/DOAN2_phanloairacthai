@@ -10,11 +10,18 @@ Dự án này xây dựng một hệ thống **phân loại rác thải tự đ�
 
 ## 🎯 Mục tiêu
 
-* Phân loại rác thải thành các nhóm:
+* Phân loại rác thải thành :
 
-  * 🟢 Rác hữu cơ
-  * 🔵 Rác tái chế
-  * ⚫ Rác vô cơ
+*Rác kim loại (metal);
+*Rác nhựa (plastic);
+*Rác hữu cơ (biological);
+*Rác giấy (paper);
+*Rác thủy tinh, gồm: thủy tinh nâu (brown-glass), thủy tinh xanh (green-glass), thủy tinh trắng (white-glass);
+*Bìa carton (cardboard);
+*Quần áo (clothes);
+*Giày dép (shoes);
+*Pin đã qua sử dụng (battery);
+* Rác thải tổng hợp khác (trash).
 * Ứng dụng mô hình CNN để nhận diện hình ảnh
 * Xây dựng web app đơn giản để demo hệ thống
 
