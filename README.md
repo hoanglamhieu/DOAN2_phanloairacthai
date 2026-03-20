@@ -172,7 +172,7 @@ pip install <tên-thư-viện>
 ## 👨‍💻 Tác giả
 
 * Sinh viên: Hoàng Lâm Hiếu 
-* Đề tài: **Phân loại rác thải bằng AI**
+* Đề tài: **Phân loại rác thải bằng AI bằng mô hình CNN**
 
 ---
 
