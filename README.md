@@ -1,156 +1,176 @@
-♻️ Waste Classification System using CNN
-📌 Giới thiệu
+# ♻️ Waste Classification System using CNN
 
-Dự án xây dựng hệ thống phân loại rác thải sinh hoạt sử dụng mạng nơ-ron tích chập (CNN - Convolutional Neural Network).
+## 📌 Giới thiệu
 
-Hệ thống cho phép người dùng:
+Trong bối cảnh ô nhiễm môi trường ngày càng gia tăng, việc phân loại rác thải đóng vai trò rất quan trọng trong xử lý và tái chế.
 
-Upload ảnh rác thải
+Dự án này xây dựng một hệ thống **phân loại rác thải tự động** sử dụng **Deep Learning (CNN)**, cho phép người dùng tải ảnh lên và nhận kết quả phân loại ngay lập tức.
 
-Mô hình AI sẽ tự động nhận diện và phân loại
+---
 
-👉 Ứng dụng giúp hỗ trợ phân loại rác, nâng cao ý thức bảo vệ môi trường.
+## 🎯 Mục tiêu
 
-🎯 Mục tiêu
+* Phân loại rác thải thành các nhóm:
 
-Xây dựng mô hình AI phân loại rác
+  * 🟢 Rác hữu cơ
+  * 🔵 Rác tái chế
+  * ⚫ Rác vô cơ
+* Ứng dụng mô hình CNN để nhận diện hình ảnh
+* Xây dựng web app đơn giản để demo hệ thống
 
-Nhận diện nhiều loại rác khác nhau
+---
 
-Xây dựng web demo trực quan, dễ sử dụng
+## 🧠 Công nghệ sử dụng
 
-🧠 Công nghệ sử dụng
+* Python
+* TensorFlow / Keras
+* OpenCV
+* NumPy
+* Flask (Web Framework)
+* HTML/CSS
 
-Python
+---
 
-TensorFlow / Keras
+## 📂 Cấu trúc thư mục
 
-OpenCV / PIL
-
-Flask (Web)
-
-HTML, CSS
-
-📂 Cấu trúc thư mục
-phanloairacthaisinhhoat/
+```
+waste-classification/
 │
-├── dataset_new/              # Dataset huấn luyện
-│   ├── battery/
-│   ├── biological/
-│   ├── brown-glass/
-│   ├── cardboard/
-│   ├── clothes/
-│   ├── green-glass/
-│   ├── metal/
-│   ├── paper/
-│   ├── plastic/
-│   ├── shoes/
-│   ├── trash/
-│   └── white-glass/
-│
-├── model/                   # Lưu model sau khi train
-│
-├── static/                  # CSS, ảnh
-│
-├── waste_classification_web/ # Code web Flask
-│
-├── train_model.py           # File train CNN
-├── class_names.json         # Danh sách label
-├── requirements.txt         # Thư viện
-├── README.md
-└── .gitignore
-🧩 Dataset
+├── dataset/              # Dữ liệu huấn luyện
+├── model/                # Mô hình đã train (.h5)
+├── static/               # Ảnh upload
+├── templates/            # Giao diện HTML
+├── app.py                # Chương trình chính (Flask)
+├── train.py              # File huấn luyện model
+└── requirements.txt      # Danh sách thư viện
+```
 
-Dataset gồm nhiều loại rác:
+---
 
-Battery (pin)
+## ⚙️ Hướng dẫn cài đặt
 
-Biological (rác hữu cơ)
+### 1. Clone project
 
-Glass (kính: xanh, trắng, nâu)
+```
+git clone https://github.com/hoanglamhieu/DOAN2_phanloairacthai
+cd waste-classification
+```
 
-Cardboard (bìa carton)
+---
 
-Clothes (quần áo)
+### 2. Tạo môi trường ảo (khuyến nghị)
 
-Metal (kim loại)
+#### Windows:
 
-Paper (giấy)
+```
+python -m venv venv
+venv\Scripts\activate
+```
 
-Plastic (nhựa)
+#### Mac/Linux:
 
-Shoes (giày dép)
+```
+python3 -m venv venv
+source venv/bin/activate
+```
 
-Trash (rác khác)
+---
 
-👉 Dữ liệu được tổ chức theo từng thư mục → phù hợp để train CNN.
+### 3. Cài đặt thư viện
 
-🏗️ Kiến trúc hệ thống
-User → Upload ảnh → Tiền xử lý → CNN Model → Predict → Hiển thị kết quả
-🧠 Mô hình CNN
-
-Mô hình bao gồm:
-
-Convolution Layer: trích xuất đặc trưng ảnh
-
-MaxPooling Layer: giảm kích thước
-
-Flatten Layer
-
-Dense Layer
-
-Output Layer (Softmax)
-
-👉 Sử dụng TensorFlow/Keras để xây dựng và huấn luyện.
-
-⚙️ Cài đặt
-1. Clone project https://github.com/hoanglamhieu/DOAN2_phanloairacthai
-git clone https:
-cd phanloairacthaisinhhoat
-2. Cài thư viện
+```
 pip install -r requirements.txt
-🚀 Train model
-python train_model.py
+```
 
-Model sẽ được lưu trong thư mục model/
+---
 
-🌐 Chạy web
-cd waste_classification_web
+## 🚀 Cách chạy chương trình
+
+### ▶️ Chạy web app
+
+```
 python app.py
+```
 
-Truy cập:
+👉 Sau đó mở trình duyệt tại:
 
+```
 http://127.0.0.1:5000
-🔍 Dự đoán
+```
 
-Upload ảnh từ giao diện web
+---
 
-Hệ thống trả về:
+### 🧪 Huấn luyện lại model (nếu cần)
 
-Loại rác
+```
+python train.py
+```
 
-Độ tin cậy (confidence)
+---
 
-📊 Kết quả
+## 🔄 Quy trình hoạt động
 
-Mô hình đạt độ chính xác khoảng: 80% - 95% (tuỳ dataset)
+```
+Upload ảnh → Xử lý ảnh → CNN → Dự đoán → Hiển thị kết quả
+```
 
-Nhận diện tốt các loại rác phổ biến
+---
 
-🔧 Hướng phát triển
+## 📸 Demo hệ thống
 
-Tăng dữ liệu thực tế
+* Người dùng upload ảnh rác
+* Hệ thống phân tích bằng CNN
+* Trả về kết quả phân loại
 
-Data Augmentation
+---
 
-Nâng cấp model:
+## ⚠️ Lỗi thường gặp
 
-ResNet
+### ❌ Không import được TensorFlow
 
-MobileNet
+```
+pip install tensorflow==2.10
+```
 
-EfficientNet
+---
 
-Deploy lên web/app
+### ❌ Thiếu thư viện
 
-Nhận diện realtime bằng camera
+```
+pip install <tên-thư-viện>
+```
+
+---
+
+### ❌ Không load được model
+
+* Kiểm tra file `.h5`
+* Kiểm tra đường dẫn model
+
+---
+
+## 🔮 Hướng phát triển
+
+* Tăng dữ liệu huấn luyện
+* Áp dụng Data Augmentation
+* Sử dụng mô hình nâng cao:
+
+  * ResNet
+  * MobileNet
+  * EfficientNet
+* Deploy lên web/server
+
+---
+
+## 👨‍💻 Tác giả
+
+* Sinh viên: Hoàng Lâm Hiếu 
+* Đề tài: **Phân loại rác thải bằng AI**
+
+---
+
+## ⭐ Đóng góp
+
+Nếu bạn thấy dự án hữu ích, hãy ⭐ repo để ủng hộ!
+
+---
