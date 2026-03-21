@@ -65,5 +65,5 @@ print("🚀 Bắt đầu huấn luyện...")
 model.fit(train_gen, validation_data=val_gen, epochs=10)
 
 
-model.save("model/waste_mobilenet_v2.h5")
-print("✅ Đã lưu model mới tại model/waste_mobilenet_v2.h5")
+model.save("model/waste_mobilenet.h5")
+print("✅ Đã lưu model mới tại model/waste_mobilenet.h5")
