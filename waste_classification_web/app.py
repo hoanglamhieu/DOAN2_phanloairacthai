@@ -16,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'static', 'uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
-model_path = os.path.join(BASE_DIR, 'model', 'waste_mobilenet_v2.h5')
+model_path = os.path.join(BASE_DIR, 'model', 'waste_mobilenet_v2.keras')
 model = load_model(model_path)
 
 
