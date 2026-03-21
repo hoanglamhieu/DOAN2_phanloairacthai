@@ -5,8 +5,8 @@ dataset/
 waste_classification_web/model/
 
 # Ignore model files
-*.h5
-*.keras
+# *.h5
+# *.keras
 
 # Ignore cache
 __pycache__/
