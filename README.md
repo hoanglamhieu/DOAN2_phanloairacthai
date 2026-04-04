@@ -184,3 +184,5 @@ Nếu bạn thấy dự án hữu ích, hãy ⭐ repo để ủng hộ!
 link chạy demo: https://drive.google.com/file/d/1M_WLK4x5JkYj7suDZYRE4rbPfTceQQii/view?usp=drive_link
 ___
 link mô hình huấn luyện: https://drive.google.com/file/d/1dmoG5rxLHefYXnrTPk9S2Jb72_xz7OJY/view?usp=drive_link
+__
+link deloy: https://deloy-phan-loai-rac.vercel.app/
